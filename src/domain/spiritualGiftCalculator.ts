@@ -1,10 +1,10 @@
-import { Question } from "../@types/Question";
-import { SpiritualGift } from "../@types/SpiritualGift";
+import { Question, SelectedQuestion } from "../@types/Question";
+import { CalculateSpiritualGift, SpiritualGift } from "../@types/SpiritualGift";
 
 
-export const sumScoreByQustionList = (qustions: Array<Question>, giftQuestions: Array<Question>): number => {
+export const sumScoreByQustionList = (questions: Array<SelectedQuestion>, giftQuestions: Array<Question>): number => {
     let sum = 0;
-    qustions.forEach((question) => {
+    questions.forEach((question) => {
         giftQuestions.forEach((giftQuestion) => {
             if (question.index === giftQuestion.index) {
                 sum += question.score
@@ -16,12 +16,33 @@ export const sumScoreByQustionList = (qustions: Array<Question>, giftQuestions: 
 }
 
 
-export const calculateGifts = (qustions: Array<Question>, spiritualGifts: Array<SpiritualGift>): Array<SpiritualGift>  => {
+export const mapSelectedQuestionList = (questions: Array<SelectedQuestion>, giftQuestions: Array<Question>): Array<SelectedQuestion> => {
+    let selectedQustionList: Array<SelectedQuestion> = [];
+    questions.forEach((question) => {
+        giftQuestions.forEach((giftQuestion) => {
+            if (question.index === giftQuestion.index) {
+                selectedQustionList.push(question)
+            }
+        })
+    })
+
+    return selectedQustionList;
+}
+
+
+export const calculateGifts = (questions: Array<SelectedQuestion>, spiritualGifts: Array<SpiritualGift>): Array<CalculateSpiritualGift>  => {
     return spiritualGifts.map((sg) => {
         return {
-            question_list: sg.question_list,
-            sum_question_score: sumScoreByQustionList(qustions, sg.question_list),
+            question_list: mapSelectedQuestionList(questions, sg.question_list),
+            sum_question_score: sumScoreByQustionList(questions, sg.question_list),
             spiritual_gift_name: sg.spiritual_gift_name
         }
+    })
+}
+
+export const createMockScores = (questions: Array<Question>): Array<SelectedQuestion> => {
+    return questions.map((question) => {
+        let selectedQusestion = {...question, score: 3 }
+        return selectedQusestion
     })
 }
